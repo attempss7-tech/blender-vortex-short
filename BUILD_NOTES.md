@@ -13,6 +13,15 @@ Built 2026-11-12. Repo: `attempss7-tech/blender-vortex-short`.
   (4,712,984 bytes) across rebuilds. The .blend MD5 differs between
   rebuilds (Blender write-order nondeterminism) — stats + size are the
   reproducibility criterion, and both match.
+- The 2D rig lives in the repo at `shared/2d_rig.py` (copy of the proven
+  shared rig) and both `build_all.py` and `shots.py` find it via a
+  `_find_rig()` resolver: repo layout (`scripts/../shared`) first, then
+  the workspace layout (`scripts/../../shared`). The Colab rebuild path
+  was proven by building from a repo-layout copy in /tmp — identical
+  stats (408 objects / 11,920 polys / 133 actions / 10 cameras).
+- GitHub commit `7b62eef8` (2026-11-12): 18 files pushed, tree verified
+  via the API (README, 7 scripts, shared rig + proof notes, words.json,
+  mix.wav, cues.md, .blend, notebook, 3 docs).
 - Layout: `scripts/` (common, props, shots, build_all, render_stills,
   colab_render, make_mix), `scenes/vortex.blend`, `assets/` (words.json,
   mix.wav, cues.md, stems), `notebook/vortex_colab.ipynb`,
@@ -24,7 +33,11 @@ Built 2026-11-12. Repo: `attempss7-tech/blender-vortex-short`.
   under sky shots). Verified: −14.6 LUFS integrated (ffmpeg ebur128),
   −1.20 dBTP, exactly 42.768 s, 48 kHz stereo 24-bit. Stems kept
   locally (`stem_voice/music/sfx.wav`); only mix.wav + words.json +
-  cues.md are pushed to the repo.
+  cues.md are pushed to the repo. Two bugs found while building the mix:
+  `widen()` in dsp.py takes MONO — passing stereo made np.pad allocate
+  ~8.7 GB and OOM-killed the run (fix: widen the mono bed, it returns
+  stereo); and the last rumble span ended at 42.77 s, past N — clamp
+  span ends to N (fix in make_mix.py).
 
 ## Per-phrase verdicts (Workbench stills viewed, v4)
 
